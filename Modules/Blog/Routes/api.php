@@ -16,6 +16,5 @@ use \Modules\Blog\Http\Controllers\BlogController;
 */
 
 Route::group(['prefix' => 'blog-module'], function(){
-    Route::get('/test', [BlogController::class, 'test']);
     Route::apiResource('articles', BlogController::class);
 });
