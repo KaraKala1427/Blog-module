@@ -2,78 +2,53 @@
 
 namespace Modules\Blog\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use Modules\Blog\Http\Requests\ArticleIndexRequest;
+use Modules\Blog\Http\Requests\ArticleRequest;
+use Modules\Blog\Services\BlogService;
+use Modules\Blog\Transformers\ArticleTransformer;
 
 class BlogController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+    private $service;
+
+    public function __construct(BlogService $service)
     {
-        return view('blog::index');
+        $this->service = $service;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function index(ArticleIndexRequest $request)
     {
-        return view('blog::create');
+        $articles = $this->service->indexPaginate($request->validated());
+        return fractal()->collection($articles->data)->transformWith(new ArticleTransformer())->toArray();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function show($id)
     {
-        return view('blog::show');
+        $model = $this->service->get($id);
+        if($model->code != '200'){
+            return $this->result($model);
+        }
+        return fractal($model->data, new ArticleTransformer())->toArray();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+    public function store(ArticleRequest $request)
     {
-        return view('blog::edit');
+        $model = $this->service->store($request->validated());
+        return $this->result($model);
     }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
+    public function update($id, ArticleRequest $request)
     {
-        //
+        $model = $this->service->update($id, $request->validated());
+        return $this->result($model);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
     public function destroy($id)
     {
-        //
+        $model =  $this->service->destroy($id);
+        return $this->result($model);
     }
+
 }

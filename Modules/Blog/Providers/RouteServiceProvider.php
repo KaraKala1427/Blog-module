@@ -12,7 +12,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $moduleNamespace = 'Modules\Blog\Http\Controllers';
+//    protected $moduleNamespace = 'Modules\Blog\Http\Controllers';
 
     /**
      * Called before routes are registered.
@@ -48,7 +48,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-            ->namespace($this->moduleNamespace)
+            ->namespace($this->namespace)
             ->group(module_path('Blog', '/Routes/web.php'));
     }
 
@@ -63,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('api')
             ->middleware('api')
-            ->namespace($this->moduleNamespace)
+            ->namespace($this->namespace)
             ->group(module_path('Blog', '/Routes/api.php'));
     }
 }
